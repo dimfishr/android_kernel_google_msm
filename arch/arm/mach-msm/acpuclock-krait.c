@@ -46,6 +46,12 @@
 
 #define SECCLKAGD		BIT(4)
 
+#ifdef CONFIG_CPU_OVERCLOCK
+#define FREQ_TABLE_SIZE		38
+#else
+#define FREQ_TABLE_SIZE		36
+#endif
+
 static DEFINE_MUTEX(driver_lock);
 static DEFINE_SPINLOCK(l2_lock);
 
@@ -926,7 +932,7 @@ static void __init bus_init(const struct l2_level *l2_level)
 }
 
 #ifdef CONFIG_CPU_FREQ_MSM
-static struct cpufreq_frequency_table freq_table[NR_CPUS][35];
+static struct cpufreq_frequency_table freq_table[NR_CPUS][FREQ_TABLE_SIZE];
 
 #ifdef CONFIG_MSM_CPU_VOLTAGE_CONTROL
 #define CPU_VDD_MAX		1450
