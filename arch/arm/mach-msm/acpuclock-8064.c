@@ -132,6 +132,10 @@ static struct l2_level l2_freq_tbl[] __initdata = {
 	[13] = { { 1026000, HFPLL, 1, 0x26 }, 1150000, 1150000, 5 },
 	[14] = { { 1080000, HFPLL, 1, 0x28 }, 1150000, 1150000, 5 },
 	[15] = { { 1134000, HFPLL, 1, 0x2A }, 1150000, 1150000, 5 },
+#ifdef CONFIG_CPU_OVERCLOCK
+	[16] = { { 1188000, HFPLL, 1, 0x2C }, 1150000, 1150000, 5 },
+	[17] = { { 1242000, HFPLL, 1, 0x2E }, 1150000, 1150000, 5 },
+#endif
 	{ }
 };
 
@@ -160,6 +164,10 @@ static struct acpu_level tbl_slow[] __initdata = {
 	{ 0, {  1404000, HFPLL, 1, 0x34 }, L2(15), 1237500 },
 	{ 1, {  1458000, HFPLL, 1, 0x36 }, L2(15), 1237500 },
 	{ 1, {  1512000, HFPLL, 1, 0x38 }, L2(15), 1250000 },
+#ifdef CONFIG_CPU_OVERCLOCK
+	{ 1, {  1620000, HFPLL, 1, 0x3C }, L2(16), 1275000 },
+	{ 1, {  1728000, HFPLL, 1, 0x40 }, L2(16), 1300000 },
+#endif
 	{ 0, { 0 } }
 };
 
@@ -188,6 +196,10 @@ static struct acpu_level tbl_nom[] __initdata = {
 	{ 0, {  1404000, HFPLL, 1, 0x34 }, L2(15), 1187500 },
 	{ 1, {  1458000, HFPLL, 1, 0x36 }, L2(15), 1187500 },
 	{ 1, {  1512000, HFPLL, 1, 0x38 }, L2(15), 1200000 },
+#ifdef CONFIG_CPU_OVERCLOCK
+	{ 1, {  1620000, HFPLL, 1, 0x3C }, L2(16), 1225000 },
+	{ 1, {  1728000, HFPLL, 1, 0x40 }, L2(16), 1250000 },
+#endif
 	{ 0, { 0 } }
 };
 
@@ -216,6 +228,10 @@ static struct acpu_level tbl_fast[] __initdata = {
 	{ 0, {  1404000, HFPLL, 1, 0x34 }, L2(15), 1137500 },
 	{ 1, {  1458000, HFPLL, 1, 0x36 }, L2(15), 1137500 },
 	{ 1, {  1512000, HFPLL, 1, 0x38 }, L2(15), 1150000 },
+#ifdef CONFIG_CPU_OVERCLOCK
+	{ 1, {  1620000, HFPLL, 1, 0x3C }, L2(16), 1175000 },
+	{ 1, {  1728000, HFPLL, 1, 0x40 }, L2(16), 1200000 },
+#endif
 	{ 0, { 0 } }
 };
 
@@ -244,6 +260,10 @@ static struct acpu_level tbl_faster[] __initdata = {
 	{ 0, {  1404000, HFPLL, 1, 0x34 }, L2(15), 1112500 },
 	{ 1, {  1458000, HFPLL, 1, 0x36 }, L2(15), 1112500 },
 	{ 1, {  1512000, HFPLL, 1, 0x38 }, L2(15), 1125000 },
+#ifdef CONFIG_CPU_OVERCLOCK
+	{ 1, {  1620000, HFPLL, 1, 0x3C }, L2(16), 1150000 },
+	{ 1, {  1728000, HFPLL, 1, 0x40 }, L2(16), 1175000 },
+#endif
 	{ 0, { 0 } }
 };
 
@@ -620,9 +640,9 @@ static struct acpu_level tbl_PVS6_2000MHz[] __initdata = {
 
 static struct pvs_table pvs_tables[NUM_SPEED_BINS][NUM_PVS] __initdata = {
 	[0][PVS_SLOW]    = {tbl_slow, sizeof(tbl_slow),     0 },
-	[0][PVS_NOMINAL] = {tbl_nom,  sizeof(tbl_nom),  25000 },
-	[0][PVS_FAST]    = {tbl_fast, sizeof(tbl_fast), 25000 },
-	[0][PVS_FASTER]  = {tbl_faster, sizeof(tbl_faster), 25000 },
+	[0][PVS_NOMINAL] = {tbl_nom,  sizeof(tbl_nom),  26000 },
+	[0][PVS_FAST]    = {tbl_fast, sizeof(tbl_fast), 26000 },
+	[0][PVS_FASTER]  = {tbl_faster, sizeof(tbl_faster), 26000 },
 
 	[1][0] = { tbl_PVS0_1700MHz, sizeof(tbl_PVS0_1700MHz),     0 },
 	[1][1] = { tbl_PVS1_1700MHz, sizeof(tbl_PVS1_1700MHz),     25000 },
