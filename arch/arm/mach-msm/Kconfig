@@ -1624,6 +1624,19 @@ config MSM_CPU_VOLTAGE_CONTROL
 	help
 	  This enables userspace CPU Voltage Control
 
+config GPU_OVERCLOCK
+	bool "Enable GPU Overclocking option"
+	default n
+	help
+	  APQ8064 GPU overclocking to 487.5
+
+config GPU_OVERCLOCK_450
+	bool "Enable special GPU Overclocking option"
+	depends on GPU_OVERCLOCK
+	default n
+	help
+		APQ8064 GPU overclocking to 450
+
 config INTELLI_PLUG
 	bool "Enable intelli-plug cpu hotplug driver"
 	default n
