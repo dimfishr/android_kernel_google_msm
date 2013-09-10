@@ -1691,7 +1691,7 @@ static void dbs_check_cpu(struct cpu_dbs_info_s *this_dbs_info)
 		}
 	}
 
-	if (input_event_boosted()) {
+	if (input_event_boosted() || mako_boosted) {
 		return;
 	}
 
@@ -1818,7 +1818,7 @@ static void do_dbs_timer(struct work_struct *work)
 				delay -= jiffies % delay;
 		}
 	} else {
-		if (input_event_boosted())
+		if (input_event_boosted() || mako_boosted)
 			goto sched_wait;
 
 		__cpufreq_driver_target(dbs_info->cur_policy,
