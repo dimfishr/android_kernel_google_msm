@@ -35,4 +35,8 @@ struct pm8xxx_pwrkey_platform_data  {
 	u32  wakeup;
 };
 
+#ifdef CONFIG_PWRKEY_SUSPEND
+extern bool pwrkey_pressed;
+#endif
+
 #endif /* __PMIC8XXX_PWRKEY_H__ */
