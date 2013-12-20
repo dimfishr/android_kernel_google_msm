@@ -101,9 +101,15 @@ static int __init read_s2w_cmdline(char *s2w)
 	if (strcmp(s2w, "1") == 0) {
 		pr_info("[cmdline_s2w]: Sweep2Wake enabled. | s2w='%s'\n", s2w);
 		s2w_switch = 1;
+		s2w_s2sonly = 0;
+	} else if (strcmp(s2w, "2") == 0) {
+		pr_info("[cmdline_s2w]: Sweep2Sleep only. | s2w='%s'\n", s2w);
+		s2w_switch = 1;
+		s2w_s2sonly = 1;
 	} else if (strcmp(s2w, "0") == 0) {
 		pr_info("[cmdline_s2w]: Sweep2Wake disabled. | s2w='%s'\n", s2w);
 		s2w_switch = 0;
+		s2w_s2sonly = 0;
 	} else {
 		pr_info("[cmdline_s2w]: No valid input found. Going with default: | s2w='%u'\n", s2w_switch);
 	}
@@ -354,7 +360,7 @@ static ssize_t s2w_sweep2wake_show(struct device *dev,
 {
 	size_t count = 0;
 
-	count += sprintf(buf, "%d\n", s2w_switch);
+	count += sprintf(buf, "%d\n", s2w_switch + s2w_s2sonly);
 
 	return count;
 }
@@ -362,9 +368,16 @@ static ssize_t s2w_sweep2wake_show(struct device *dev,
 static ssize_t s2w_sweep2wake_dump(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t count)
 {
-	if (buf[0] >= '0' && buf[0] <= '1' && buf[1] == '\n')
-                if (s2w_switch != buf[0] - '0')
-		        s2w_switch = buf[0] - '0';
+	if (buf[0] >= '0' && buf[0] <= '2' && buf[1] == '\n')
+		if (s2w_switch + s2w_s2sonly != buf[0] - '0') {
+			s2w_switch = buf[0] - '0';
+			if (s2w_switch == 2) {
+				s2w_switch = 1;
+				s2w_s2sonly = 1;
+			} else {
+				s2w_s2sonly = 0;
+			}
+		}
 
 	return count;
 }
