@@ -24,6 +24,7 @@
 #include <linux/rq_stats.h>
 #include <linux/slab.h>
 #include <linux/input.h>
+#include <linux/cpufreq.h>
 
 //#define DEBUG_INTELLI_PLUG
 #undef DEBUG_INTELLI_PLUG
@@ -138,12 +139,14 @@ static unsigned int calculate_thread_stats(void)
 {
 	unsigned int avg_nr_run = avg_nr_running();
 	unsigned int nr_run;
+	unsigned int nr_run_min;
 	unsigned int threshold_size;
 
 	if (!eco_mode_active) {
 		threshold_size =  ARRAY_SIZE(nr_run_thresholds_full);
 		nr_run_hysteresis = 8;
 		nr_fshift = 3;
+		nr_run_min = mako_boosted ? 2 : 1;
 #ifdef DEBUG_INTELLI_PLUG
 		pr_info("intelliplug: full mode active!");
 #endif
@@ -152,12 +155,13 @@ static unsigned int calculate_thread_stats(void)
 		threshold_size =  ARRAY_SIZE(nr_run_thresholds_eco);
 		nr_run_hysteresis = 4;
 		nr_fshift = 1;
+		nr_run_min = 1;
 #ifdef DEBUG_INTELLI_PLUG
 		pr_info("intelliplug: eco mode active!");
 #endif
 	}
 
-	for (nr_run = 1; nr_run < threshold_size; nr_run++) {
+	for (nr_run = nr_run_min; nr_run < threshold_size; nr_run++) {
 		unsigned int nr_threshold;
 		if (!eco_mode_active)
 			nr_threshold = nr_run_thresholds_full[nr_run - 1];
