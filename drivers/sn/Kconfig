@@ -7,7 +7,7 @@ menu "SN Devices"
 
 config SGI_IOC3
 	tristate "SGI IOC3 Base IO support"
-	default m
+	default n
 	---help---
 	This option enables basic support for the SGI IOC3-based Base IO
 	controller card.  This option does not enable any specific
