@@ -47,7 +47,7 @@ config RTL8192CU
 config RTLWIFI
 	tristate
 	depends on RTL8192CE || RTL8192CU || RTL8192SE || RTL8192DE
-	default m
+	default n
 
 config RTLWIFI_DEBUG
 	bool "Additional debugging output"
@@ -57,4 +57,4 @@ config RTLWIFI_DEBUG
 config RTL8192C_COMMON
 	tristate
 	depends on RTL8192CE || RTL8192CU
-	default m
+	default n

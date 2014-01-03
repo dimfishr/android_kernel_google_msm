@@ -1366,7 +1366,7 @@ config MSM_N_WAY_SMSM
 config MSM_RESET_MODEM
 	tristate "Reset Modem Driver"
 	depends on MSM_SMD
-	default m
+	default n
 	help
 	  Allows the user to reset the modem through a device node.
 
@@ -1532,21 +1532,21 @@ config MSM_RPC_WATCHDOG
 
 config MSM_RPC_PING
 	depends on MSM_ONCRPCROUTER && DEBUG_FS
-	default m
+	default n
 	bool "MSM rpc ping"
 	help
 	  Implements MSM rpc ping test module.
 
 config MSM_RPC_PROC_COMM_TEST
 	depends on DEBUG_FS && MSM_PROC_COMM
-	default m
+	default n
 	bool "MSM rpc proc comm test"
 	help
 	  Implements MSM rpc proc comm test module.
 
 config MSM_RPC_OEM_RAPI
 	depends on MSM_ONCRPCROUTER
-	default m
+	default n
 	bool "MSM oem rapi"
 	help
 	  Implements MSM oem rapi client module.
@@ -1593,7 +1593,7 @@ config MSM_DALRPC
 config MSM_DALRPC_TEST
 	tristate "DAL RPC test module"
 	depends on (MSM_DALRPC && DEBUG_FS)
-	default m
+	default n
 	help
 	  Exercises DAL RPC calls to QDSP6.
 
@@ -1770,7 +1770,7 @@ config MSM_VREG_SWITCH_INVERTED
 
 config MSM_DMA_TEST
 	tristate "MSM DMA test module"
-	default m
+	default n
 	help
 	  Intended to be compiled as a module.  Provides a device node
 	  and ioctls for testing the MSM dma system.
@@ -2089,7 +2089,7 @@ config SCORPION_Uni_45nm_BUG
 config MSM_BUSPM_DEV
 	tristate "MSM Bus Performance Monitor Kernel Module"
 	depends on (ARCH_MSM8X60 || ARCH_MSM8960)
-	default m
+	default n
 	help
 	  This kernel module is used to mmap() hardware registers for the
 	  performance monitors, counters, etc. The module can also be used to

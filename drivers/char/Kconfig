@@ -572,7 +572,7 @@ config MMTIMER
 config UV_MMTIMER
 	tristate "UV_MMTIMER Memory mapped RTC for SGI UV"
 	depends on X86_UV
-	default m
+	default n
 	help
 	  The uv_mmtimer device allows direct userspace access to the
 	  UV system timer.
@@ -652,7 +652,7 @@ config MSM_ROTATOR_USE_IMEM
 config MSM_ADSPRPC
         tristate "Qualcomm ADSP RPC driver"
         depends on MSM_AUDIO_QDSP6 || MSM_AUDIO_QDSP6V2
-        default m
+        default n
         help
           Provides a communication mechanism that allows for clients to
           make remote method invocations across processor boundary to

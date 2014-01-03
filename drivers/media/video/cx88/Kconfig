@@ -72,7 +72,7 @@ config VIDEO_CX88_DVB
 
 config VIDEO_CX88_VP3054
 	tristate "VP-3054 Secondary I2C Bus Support"
-	default m
+	default n
 	depends on VIDEO_CX88_DVB && DVB_MT352
 	---help---
 	  This adds DVB-T support for cards based on the

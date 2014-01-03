@@ -59,7 +59,7 @@ menu "Cell Broadband Engine options"
 
 config SPU_FS
 	tristate "SPU file system"
-	default m
+	default n
 	depends on PPC_CELL
 	select SPU_BASE
 	select MEMORY_HOTPLUG
@@ -110,13 +110,13 @@ config PPC_IBM_CELL_POWERBUTTON
 
 config CBE_THERM
 	tristate "CBE thermal support"
-	default m
+	default n
 	depends on CBE_RAS && SPU_BASE
 
 config CBE_CPUFREQ
 	tristate "CBE frequency scaling"
 	depends on CBE_RAS && CPU_FREQ
-	default m
+	default n
 	help
 	  This adds the cpufreq driver for Cell BE processors.
 	  For details, take a look at <file:Documentation/cpu-freq/>.
@@ -149,7 +149,7 @@ config PPC_PMI
 config CBE_CPUFREQ_SPU_GOVERNOR
 	tristate "CBE frequency scaling based on SPU usage"
 	depends on SPU_FS && CPU_FREQ
-	default m
+	default n
 	help
 	  This governor checks for spu usage to adjust the cpu frequency.
 	  If no spu is running on a given cpu, that cpu will be throttled to

@@ -92,12 +92,12 @@ config PNFS_FILE_LAYOUT
 config PNFS_BLOCK
 	tristate
 	depends on NFS_FS && NFS_V4_1 && BLK_DEV_DM
-	default m
+	default n
 
 config PNFS_OBJLAYOUT
 	tristate
 	depends on NFS_FS && NFS_V4_1 && SCSI_OSD_ULD
-	default m
+	default n
 
 config NFS_V4_1_IMPLEMENTATION_ID_DOMAIN
 	string "NFSv4.1 Implementation ID Domain"
