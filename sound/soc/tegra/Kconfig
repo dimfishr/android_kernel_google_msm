@@ -15,7 +15,7 @@ config SND_SOC_TEGRA_I2S
 config SND_SOC_TEGRA_SPDIF
 	tristate
 	depends on SND_SOC_TEGRA
-	default m
+	default n
 	help
 	  Say Y or M if you want to add support for the SPDIF interface.
 	  You will also need to select the individual machine drivers to support

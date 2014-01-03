@@ -4,7 +4,7 @@
 
 config HW_RANDOM
 	tristate "Hardware Random Number Generator Core support"
-	default m
+	default n
 	---help---
 	  Hardware Random Number Generator Core infrastructure.
 

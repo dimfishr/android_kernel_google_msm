@@ -124,7 +124,7 @@ config XEN_XENBUS_FRONTEND
 config XEN_GNTDEV
 	tristate "userspace grant access device driver"
 	depends on XEN
-	default m
+	default n
 	select MMU_NOTIFIER
 	help
 	  Allows userspace processes to use grants.
@@ -132,7 +132,7 @@ config XEN_GNTDEV
 config XEN_GRANT_DEV_ALLOC
 	tristate "User-space grant reference allocator driver"
 	depends on XEN
-	default m
+	default n
 	help
 	  Allows userspace processes to create pages with access granted
 	  to other domains. This can be used to implement frontend drivers
@@ -154,7 +154,7 @@ config XEN_PCIDEV_BACKEND
 	tristate "Xen PCI-device backend driver"
 	depends on PCI && X86 && XEN
 	depends on XEN_BACKEND
-	default m
+	default n
 	help
 	  The PCI device backend driver allows the kernel to export arbitrary
 	  PCI devices to other guests. If you select this to be a module, you
@@ -176,12 +176,12 @@ config XEN_PCIDEV_BACKEND
 config XEN_PRIVCMD
 	tristate
 	depends on XEN
-	default m
+	default n
 
 config XEN_ACPI_PROCESSOR
 	tristate "Xen ACPI processor"
 	depends on XEN && X86 && ACPI_PROCESSOR && CPU_FREQ
-	default m
+	default n
 	help
           This ACPI processor uploads Power Management information to the Xen
 	  hypervisor.
