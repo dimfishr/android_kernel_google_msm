@@ -39,8 +39,9 @@ MODULE_LICENSE("GPL");
 #define INPUT_DEVICES	256
 
 #ifdef CONFIG_PWRKEY_SUSPEND
+bool pwrkey_suspend = true;
 bool pwrkey_pressed = false;
-bool pwrkey_suspend = false;
+bool pwrkey_touched = false;
 static int cnt = 0;
 module_param(pwrkey_suspend, bool, 0755);
 #endif
@@ -255,7 +256,7 @@ static void input_handle_event(struct input_dev *dev,
 		    !!test_bit(code, dev->key) != value) {
 
 #ifdef CONFIG_PWRKEY_SUSPEND
-		if (pwrkey_suspend) {
+		if (pwrkey_suspend && !pwrkey_touched) {
 			if (code == KEY_POWER && cnt == 0) {
 				pwrkey_pressed = true;
 				cnt++;

@@ -35,6 +35,9 @@
 #include <linux/earlysuspend.h>
 #endif
 #include <linux/hrtimer.h>
+#ifdef CONFIG_PWRKEY_SUSPEND
+#include <linux/input/pmic8xxx-pwrkey.h>
+#endif
 
 /* uncomment since no touchscreen defines android touch, do that here */
 //#define ANDROID_TOUCH_DECLARED
@@ -120,14 +123,20 @@ __setup("s2w=", read_s2w_cmdline);
 /* PowerKey work func */
 static void sweep2wake_presspwr(struct work_struct * sweep2wake_presspwr_work) {
 	if (!mutex_trylock(&pwrkeyworklock))
-                return;
+		return;
+#ifdef CONFIG_PWRKEY_SUSPEND
+	pwrkey_touched = true;
+#endif
 	input_event(sweep2wake_pwrdev, EV_KEY, KEY_POWER, 1);
 	input_event(sweep2wake_pwrdev, EV_SYN, 0, 0);
 	msleep(S2W_PWRKEY_DUR);
 	input_event(sweep2wake_pwrdev, EV_KEY, KEY_POWER, 0);
 	input_event(sweep2wake_pwrdev, EV_SYN, 0, 0);
 	msleep(S2W_PWRKEY_DUR);
-        mutex_unlock(&pwrkeyworklock);
+#ifdef CONFIG_PWRKEY_SUSPEND
+	pwrkey_touched = false;
+#endif
+	mutex_unlock(&pwrkeyworklock);
 	return;
 }
 static DECLARE_WORK(sweep2wake_presspwr_work, sweep2wake_presspwr);
