@@ -37,6 +37,7 @@ struct pm8xxx_pwrkey_platform_data  {
 
 #ifdef CONFIG_PWRKEY_SUSPEND
 extern bool pwrkey_pressed;
+extern bool pwrkey_touched;
 #endif
 
 #endif /* __PMIC8XXX_PWRKEY_H__ */
