@@ -255,6 +255,9 @@ static int mp_decision(void) {
 static void msm_mpdec_work_thread(struct work_struct *work) {
 	unsigned int cpu = nr_cpu_ids;
 
+	if (state == MSM_MPDEC_DISABLED) 
+		return;
+
 	/* Check if we are paused */
 	if (mpdec_paused_until >= ktime_to_ms(ktime_get()))
 		goto out;
@@ -380,6 +383,9 @@ static void unboost_cpu(int cpu) {
 static void msm_mpdec_revib_work_thread(struct work_struct *work) {
 	int cpu = smp_processor_id();
 
+	if (state == MSM_MPDEC_DISABLED) 
+		return;
+
 	if (per_cpu(msm_mpdec_cpudata, cpu).is_boosted) {
 		per_cpu(msm_mpdec_cpudata, cpu).revib_wq_running = true;
 		if (ktime_to_ms(ktime_get()) > per_cpu(msm_mpdec_cpudata, cpu).boost_until) {
@@ -402,6 +408,9 @@ static void mpdec_input_callback(struct work_struct *unused) {
 	struct cpufreq_policy *cpu_policy = NULL;
 	int cpu = smp_processor_id();
 	bool boosted = false;
+
+	if (state == MSM_MPDEC_DISABLED) 
+		return;
 
 	if (!per_cpu(msm_mpdec_cpudata, cpu).is_boosted) {
 		if (mutex_trylock(&per_cpu(msm_mpdec_cpudata, cpu).boost_mutex)) {
@@ -450,6 +459,9 @@ extern int bricked_thermal_throttled;
 static void mpdec_input_event(struct input_handle *handle, unsigned int type,
 				unsigned int code, int value) {
 	int i = 0;
+
+	if (state == MSM_MPDEC_DISABLED) 
+		return;
 
 #ifdef CONFIG_BRICKED_THERMAL
 	if (bricked_thermal_throttled > 0)
@@ -533,6 +545,10 @@ static struct input_handler mpdec_input_handler = {
 
 static void msm_mpdec_suspend(struct work_struct * msm_mpdec_suspend_work) {
 	int cpu = nr_cpu_ids;
+
+	if (state == MSM_MPDEC_DISABLED) 
+		return;
+
 #ifdef CONFIG_MSM_MPDEC_INPUTBOOST_CPUMIN
 	is_screen_on = false;
 #endif
@@ -561,6 +577,10 @@ static DECLARE_WORK(msm_mpdec_suspend_work, msm_mpdec_suspend);
 
 static void msm_mpdec_resume(struct work_struct * msm_mpdec_suspend_work) {
 	int cpu = nr_cpu_ids;
+
+	if (state == MSM_MPDEC_DISABLED) 
+		return;
+
 #ifdef CONFIG_MSM_MPDEC_INPUTBOOST_CPUMIN
 	is_screen_on = true;
 #endif
