@@ -13,7 +13,9 @@
  * GNU General Public License for more details.
  *
  */
+#ifdef CONFIG_HAS_EARLYSUSPEND
 #include <linux/earlysuspend.h>
+#endif
 #include <linux/workqueue.h>
 #include <linux/cpu.h>
 #include <linux/sched.h>
@@ -61,7 +63,7 @@ static unsigned int sampling_time = 0;
 static unsigned int persist_count = 0;
 static unsigned int busy_persist_count = 0;
 
-static bool suspended = false;
+extern bool early_suspended;
 
 #define NR_FSHIFT	3
 static unsigned int nr_fshift = NR_FSHIFT;
@@ -231,7 +233,7 @@ static void intelli_plug_work_fn(struct work_struct *work)
 				sampling_time = DEF_SAMPLING_MS;
 		}
 
-		if (!suspended) {
+		if (!early_suspended) {
 			switch (cpu_count) {
 			case 1:
 				if (persist_count > 0)
@@ -309,7 +311,7 @@ static void intelli_plug_early_suspend(struct early_suspend *handler)
 	flush_workqueue(intelliplug_wq);
 
 	mutex_lock(&intelli_plug_mutex);
-	suspended = true;
+	early_suspended = true;
 	mutex_unlock(&intelli_plug_mutex);
 
 	// put rest of the cores to sleep!
@@ -326,7 +328,7 @@ static void intelli_plug_late_resume(struct early_suspend *handler)
 	mutex_lock(&intelli_plug_mutex);
 	/* keep cores awake long enough for faster wake up */
 	persist_count = BUSY_PERSISTENCE;
-	suspended = false;
+	early_suspended = false;
 	mutex_unlock(&intelli_plug_mutex);
 
 	/* wake up everyone */
