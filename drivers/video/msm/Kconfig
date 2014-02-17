@@ -970,6 +970,12 @@ config FB_MSM_EBI2_PANEL_DETECT
 	---help---
 	  Support for EBI2 panel auto detect
 
+config MDP_YCBYCR_H2V1_HACK
+	bool "MDP_YCBYCR_H2V1 format hack"
+	default n
+	---help---
+	  Hack MDP_YCBYCR_H2V1 CAF format support
+
 if FB_MSM_MDSS
 	source "drivers/video/msm/mdss/Kconfig"
 endif
