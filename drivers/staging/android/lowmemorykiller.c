@@ -40,6 +40,7 @@
 #include <linux/swap.h>
 #include <linux/mutex.h>
 #include <linux/delay.h>
+#include <linux/swap.h>
 #include <linux/fs.h>
 #include <linux/cpuset.h>
 
@@ -267,15 +268,27 @@ static int lowmem_shrink(struct shrinker *s, struct shrink_control *sc)
 	int other_free;
 	int other_file = 0;
 	unsigned long nr_to_scan = sc->nr_to_scan;
+#if defined (CONFIG_SWAP) && (defined (CONFIG_ZSWAP) || defined (CONFIG_ZRAM))
+	struct sysinfo si;
+#endif
 
 	if (nr_to_scan > 0) {
 		if (mutex_lock_interruptible(&scan_mutex) < 0)
 			return 0;
 	}
 
+#if defined (CONFIG_SWAP) && (defined (CONFIG_ZSWAP) || defined (CONFIG_ZRAM))
+	si_swapinfo(&si);
+	other_free = global_page_state(NR_FREE_PAGES);
+	other_file = global_page_state(NR_FILE_PAGES) -
+						global_page_state(NR_SHMEM) +
+						(si.totalswap >> 2) -
+						total_swapcache_pages;
+#else
 	other_free = global_page_state(NR_FREE_PAGES);
 	other_file = global_page_state(NR_FILE_PAGES) -
 						global_page_state(NR_SHMEM);
+#endif
 
 	tune_lmk_param(&other_free, &other_file, sc);
 
