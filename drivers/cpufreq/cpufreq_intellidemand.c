@@ -64,6 +64,8 @@
 #define DEF_SAMPLING_EARLY_HISPEED_FACTOR	(2)
 #define DEF_SAMPLING_INTERIM_HISPEED_FACTOR	(3)
 
+#define DEF_TOUCH_BOOST (1350000)
+
 /* PATCH : SMART_UP */
 #define MIN(X, Y) ((X) < (Y) ? (X) : (Y))
 
@@ -243,6 +245,7 @@ static struct dbs_tuners {
 	unsigned int ui_sampling_rate;
 	unsigned int ui_timeout;
 	unsigned int enable_boost_cpu;
+	unsigned int touch_boost;
 
 } dbs_tuners_ins = {
 	.up_threshold_multi_core = DEF_FREQUENCY_UP_THRESHOLD,
@@ -273,6 +276,7 @@ static struct dbs_tuners {
 	.ui_sampling_rate = DEF_UI_DYNAMIC_SAMPLING_RATE,
 	.ui_timeout = DBS_UI_SAMPLING_TIMEOUT,
 	.enable_boost_cpu = 1,
+	.touch_boost = DEF_TOUCH_BOOST,
 
 };
 
@@ -482,6 +486,7 @@ show_one(step_up_interim_hispeed, step_up_interim_hispeed);
 show_one(sampling_early_factor, sampling_early_factor);
 show_one(sampling_interim_factor, sampling_interim_factor);
 show_one(enable_boost_cpu, enable_boost_cpu)
+show_one(touch_boost, touch_boost)
 
 static ssize_t show_powersave_bias
 (struct kobject *kobj, struct attribute *attr, char *buf)
@@ -956,6 +961,20 @@ static ssize_t store_enable_boost_cpu(struct kobject *a, struct attribute *b,
 	return count;
 }
 
+static ssize_t store_touch_boost(struct kobject *a, struct attribute *b,
+				const char *buf, size_t count)
+{
+	unsigned int input;
+	int ret;
+
+	ret = sscanf(buf, "%u", &input);
+	if(ret != 1)
+		return -EINVAL;
+
+	dbs_tuners_ins.touch_boost = (input > 0 ? input : 0);
+	return count;
+}
+
 /* PATCH : SMART_UP */
 #if defined(SMART_UP_SLOW_UP_AT_HIGH_FREQ)
 static void reset_hist(history_load *hist_load)
@@ -1241,6 +1260,7 @@ define_one_global_rw(input_event_min_freq);
 define_one_global_rw(ui_sampling_rate);
 define_one_global_rw(ui_timeout);
 define_one_global_rw(enable_boost_cpu);
+define_one_global_rw(touch_boost);
 
 static struct attribute *dbs_attributes[] = {
 	&sampling_rate_min.attr,
@@ -1274,6 +1294,7 @@ static struct attribute *dbs_attributes[] = {
 	&ui_sampling_rate.attr,
 	&ui_timeout.attr,
 	&enable_boost_cpu.attr,
+	&touch_boost.attr,
 
 	NULL
 };
@@ -1614,6 +1635,9 @@ static void dbs_check_cpu(struct cpu_dbs_info_s *this_dbs_info)
 			this_dbs_info->rate_mult =
 				dbs_tuners_ins.sampling_down_factor;
 
+		if (mako_boosted && freq_next < dbs_tuners_ins.touch_boost)
+			freq_next = dbs_tuners_ins.touch_boost;
+
 		dbs_freq_increase(policy, freq_next);
 
 		return;
@@ -1661,6 +1685,9 @@ static void dbs_check_cpu(struct cpu_dbs_info_s *this_dbs_info)
 				this_dbs_info->rate_mult =
 					dbs_tuners_ins.sampling_down_factor;
 
+			if (mako_boosted && target < dbs_tuners_ins.touch_boost)
+				target = dbs_tuners_ins.touch_boost;
+
 			dbs_freq_increase(policy, target);
 		return;
 	}
@@ -1690,6 +1717,9 @@ static void dbs_check_cpu(struct cpu_dbs_info_s *this_dbs_info)
 			return;
 		}
 	}
+
+	if (mako_boosted && policy->cur < dbs_tuners_ins.touch_boost)
+		dbs_freq_increase(policy,	dbs_tuners_ins.touch_boost);
 
 	if (input_event_boosted() || mako_boosted) {
 		return;
@@ -2104,7 +2134,28 @@ static void dbs_input_disconnect(struct input_handle *handle)
 }
 
 static const struct input_device_id dbs_ids[] = {
-	{ .driver_info = 1 },
+	/* multi-touch touchscreen */
+	{
+		.flags = INPUT_DEVICE_ID_MATCH_EVBIT |
+			INPUT_DEVICE_ID_MATCH_ABSBIT,
+		.evbit = { BIT_MASK(EV_ABS) },
+		.absbit = { [BIT_WORD(ABS_MT_POSITION_X)] =
+			BIT_MASK(ABS_MT_POSITION_X) |
+			BIT_MASK(ABS_MT_POSITION_Y) },
+	},
+	/* touchpad */
+	{
+		.flags = INPUT_DEVICE_ID_MATCH_KEYBIT |
+			INPUT_DEVICE_ID_MATCH_ABSBIT,
+		.keybit = { [BIT_WORD(BTN_TOUCH)] = BIT_MASK(BTN_TOUCH) },
+		.absbit = { [BIT_WORD(ABS_X)] =
+			BIT_MASK(ABS_X) | BIT_MASK(ABS_Y) },
+	},
+	/* Keypad */
+	{
+		.flags = INPUT_DEVICE_ID_MATCH_EVBIT,
+		.evbit = { BIT_MASK(EV_KEY) },
+	},
 	{ },
 };
 
