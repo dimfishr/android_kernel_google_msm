@@ -88,13 +88,13 @@ static unsigned int TwTs_Threshold[] = {140,  0, 140, 190, 140, 190, 0, 190};
 
 #define show_one(file_name, object)				\
 static ssize_t show_##file_name					\
-(struct kobject *kobj, struct attribute *attr, char *buf)	\
+(struct kobject *kobj, struct kobj_attribute *attr, char *buf)	\
 {								\
 	return sprintf(buf, "%u\n", object);			\
 }
 
 static ssize_t show_intelli_plug_active(struct kobject *kobj,
-			struct attribute *attr, char *buf)
+			struct kobj_attribute *attr, char *buf)
 {
 	return sprintf(buf, "%d\n",
 			atomic_read(&intelli_plug_active));
@@ -115,7 +115,7 @@ show_one(nr_run_hysteresis, nr_run_hysteresis);
 
 #define store_one(file_name, object)		\
 static ssize_t store_##file_name		\
-(struct kobject *kobj, struct attribute *attr,	\
+(struct kobject *kobj, struct kobj_attribute *attr,	\
 	const char *buf, size_t count)		\
 {						\
 	unsigned int input;			\
@@ -159,7 +159,7 @@ static void intelli_plug_active_eval_fn(unsigned int status)
 }
 
 static ssize_t store_intelli_plug_active(struct kobject *kobj,
-				struct attribute *attr,
+				struct kobj_attribute *attr,
 				const char *buf, size_t count)
 {
 	int ret;
@@ -572,4 +572,3 @@ MODULE_DESCRIPTION("'intell_plug' - An intelligent cpu hotplug driver for "
 MODULE_LICENSE("GPL");
 
 late_initcall(intelli_plug_init);
-late_initexit(intelli_plug_exit);
