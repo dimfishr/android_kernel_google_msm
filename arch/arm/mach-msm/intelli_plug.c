@@ -22,7 +22,9 @@
 #include <linux/slab.h>
 #include <linux/input.h>
 #include <linux/kobject.h>
+#ifdef CONFIG_HAS_EARLYSUSPEND
 #include <linux/earlysuspend.h>
+#endif
 
 #define INTELLI_PLUG_MAJOR_VERSION	3
 #define INTELLI_PLUG_MINOR_VERSION	2
@@ -47,7 +49,7 @@ static unsigned int sampling_time = 10;
 static unsigned int sampling_time_on = 10;
 static unsigned int persist_count = 0;
 static unsigned int busy_persist_count = 0;
-static bool hotplug_suspended = false;
+extern bool early_suspended;
 
 /* HotPlug Driver controls */
 static atomic_t intelli_plug_active = ATOMIC_INIT(0);
@@ -396,7 +398,7 @@ static void intelli_plug_work_fn(struct work_struct *work)
 			sampling_time = def_sampling_ms;
 	}
 
-	if (!hotplug_suspended) {
+	if (!early_suspended) {
 		switch (cpu_count) {
 		case 1:
 			if (persist_count > 0)
@@ -473,7 +475,7 @@ static void intelli_plug_early_suspend(struct early_suspend *handler)
 		num_of_active_cores = num_possible_cpus();
 
 		mutex_lock(&intelli_plug_mutex);
-		hotplug_suspended = true;
+		early_suspended = true;
 		mutex_unlock(&intelli_plug_mutex);
 
 		/* put rest of the cores to sleep! */
@@ -492,7 +494,7 @@ static void intelli_plug_late_resume(struct early_suspend *handler)
 		mutex_lock(&intelli_plug_mutex);
 		/* keep cores awake long enough for faster wake up */
 		persist_count = busy_persistence;
-		hotplug_suspended = false;
+		early_suspended = false;
 		mutex_unlock(&intelli_plug_mutex);
 
 		/* wake up everyone */
