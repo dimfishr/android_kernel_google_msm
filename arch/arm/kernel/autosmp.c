@@ -64,10 +64,12 @@ static struct asmp_param_struct {
 static unsigned int cycle = 0;
 static int enabled __read_mostly = 0;
 
-static void __cpuinit asmp_work_fn(struct work_struct *work) {
+static void asmp_work_fn(struct work_struct *work) {
 	unsigned int cpu = 0, slow_cpu = 0;
 	unsigned int rate, cpu0_rate, slow_rate = UINT_MAX, fast_rate;
 	int nr_cpu_online;
+
+	if (!enabled) return;
 
 	cycle++;
 	/* find max and min cpu freq to estimate load */
@@ -119,6 +121,8 @@ static void __cpuinit asmp_work_fn(struct work_struct *work) {
 static void asmp_early_suspend(struct early_suspend *h) {
 	int cpu;
 
+	if (!enabled) return;
+
 	/* unplug online cpu cores */
 	if (asmp_param.scroff_single_core)
 		for (cpu = 1; cpu < nr_cpu_ids; cpu++)
@@ -126,14 +130,15 @@ static void asmp_early_suspend(struct early_suspend *h) {
 				cpu_down(cpu);
 
 	/* suspend main work thread */
-	if (enabled)
-		cancel_delayed_work_sync(&asmp_work);
+        cancel_delayed_work_sync(&asmp_work);
 
 	pr_info(ASMP_TAG"suspended\n");
 }
 
-static void __cpuinit asmp_late_resume(struct early_suspend *h) {
+static void asmp_late_resume(struct early_suspend *h) {
 	int cpu;
+
+	if (!enabled) return;
 
 	/* hotplug offline cpu cores */
 	if (asmp_param.scroff_single_core)
@@ -142,9 +147,8 @@ static void __cpuinit asmp_late_resume(struct early_suspend *h) {
 				cpu_up(cpu);
 
 	/* resume main work thread */
-	if (enabled)
-		queue_delayed_work(asmp_workq, &asmp_work,
-				msecs_to_jiffies(asmp_param.delay));
+	queue_delayed_work(asmp_workq, &asmp_work,
+			msecs_to_jiffies(asmp_param.delay));
 
 	pr_info(ASMP_TAG"resumed\n");
 }
@@ -155,7 +159,7 @@ static struct early_suspend __refdata asmp_early_suspend_handler = {
 	.resume = asmp_late_resume,
 };
 
-static int __cpuinit set_enabled(const char *val, const struct kernel_param *kp) {
+static int set_enabled(const char *val, const struct kernel_param *kp) {
 	int ret;
 	int cpu;
 
