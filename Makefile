@@ -382,7 +382,7 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -Wno-sizeof-pointer-memaccess \
 		   $(KERNEL_MODS)
 
-KBUILD_AFLAGS_KERNEL :=
+KBUILD_AFLAGS_KERNEL := -Wa,-mimplicit-it=thumb
 KBUILD_CFLAGS_KERNEL := -mtune=cortex-a15 -mfpu=neon
 KBUILD_AFLAGS   := -D__ASSEMBLY__
 KBUILD_AFLAGS_MODULE  := -DMODULE
